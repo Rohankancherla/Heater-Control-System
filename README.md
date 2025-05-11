@@ -34,97 +34,84 @@ This project simulates a basic heater control system using an ESP32 and a DHT22 
 #include <DHT.h>
 
 #define DHTPIN 2          
-#define DHTTYPE DHT22     // Define the DHT sensor type
-#define HEATER_PIN 3      // Pin where the LED is connected to simulate heater
+#define DHTTYPE DHT22    
+#define HEATER_PIN 3     
 
-DHT dht(DHTPIN, DHTTYPE);  // Initialize the DHT sensor
+DHT dht(DHTPIN, DHTTYPE); 
 
 // Temperature thresholds
-const float lowerThreshold = 22.0;  // Temperature threshold to turn heater ON
-const float upperThreshold = 30.0;  // Temperature threshold to avoid overheating
-const float targetTemperature = 25.0;  // Desired temperature
+const float lowerThreshold = 22.0; 
+const float upperThreshold = 30.0; 
+const float targetTemperature = 25.0; 
 
 // State variables
-float temperature = 18.0;  // Start with a low initial temperature (18°C)
-int heaterState = LOW;  // Initial heater state (OFF)
+float temperature = 18.0; 
+int heaterState = LOW;  
 
-// Define heater states
 enum HeaterState { IDLE, HEATING, STABILIZING, TARGET_REACHED, OVERHEAT };
 HeaterState currentState = IDLE;
 
 void setup() {
-  // Start serial communication for debugging
   Serial.begin(9600);
-
-  // Initialize the DHT sensor
   dht.begin();
-
-  // Set the heater pin (LED) as output
   pinMode(HEATER_PIN, OUTPUT);
-
-  // Initial state print
   Serial.println("Heater Control System Initialized.");
 }
 
 void loop() {
-  // Simulate gradual temperature change
-  // Gradually increase the temperature
-  temperature += 0.25;  // Gradually increase temperature by 0.1°C per loop
+  temperature += 0.25;  
 
-  // Print the temperature to the Serial Monitor
   Serial.print("Simulated Temperature: ");
   Serial.println(temperature);
 
-  // State machine for heater control
+  // State machine
   switch (currentState) {
     case IDLE:
       if (temperature < lowerThreshold) {
-        currentState = HEATING;  // Start heating if the temperature is too low
-        digitalWrite(HEATER_PIN, HIGH);  // Turn LED (heater) ON
+        currentState = HEATING;
+        digitalWrite(HEATER_PIN, HIGH); 
         heaterState = HIGH;
-        Serial.println("Heater is ON (Heating)...");
+        Serial.println("Heater is ON (Heating)");
       }
       break;
 
     case HEATING:
       if (temperature >= targetTemperature) {
-        currentState = STABILIZING;  // Move to stabilizing state
-        Serial.println("Target temperature reached. Stabilizing...");
+        currentState = STABILIZING; 
+        Serial.println("Target temperature reached. Stabilizing");
       }
       break;
 
     case STABILIZING:
       if (abs(temperature - targetTemperature) < 0.5) {
-        currentState = TARGET_REACHED;  // If stabilized, reach the target
-        digitalWrite(HEATER_PIN, LOW);  // Turn LED (heater) OFF
+        currentState = TARGET_REACHED; 
+        digitalWrite(HEATER_PIN, LOW);
         heaterState = LOW;
         Serial.println("Target Reached. Heater is OFF.");
       }
       break;
 
     case TARGET_REACHED:
-      // Monitor the temperature and decide if we need to turn the heater on again
       if (temperature < lowerThreshold) {
-        currentState = HEATING;  // If temperature falls below lower threshold, heat again
-        digitalWrite(HEATER_PIN, HIGH);  // Turn LED (heater) ON
+        currentState = HEATING;
+        digitalWrite(HEATER_PIN, HIGH);
         heaterState = HIGH;
-        Serial.println("Temperature dropped. Heater is ON (Heating)...");
+        Serial.println("Temperature dropped. Heater is ON (Heating)");
       } else if (temperature > upperThreshold) {
-        currentState = OVERHEAT;  // If overheat, turn off the heater
-        digitalWrite(HEATER_PIN, LOW);  // Turn LED (heater) OFF
+        currentState = OVERHEAT;
+        digitalWrite(HEATER_PIN, LOW);
         heaterState = LOW;
         Serial.println("Overheating! Heater is OFF.");
       }
       break;
 
     case OVERHEAT:
-      // If overheated, the system will turn off the heater and enter the overheat state
       Serial.println("System in Overheat. Heater OFF!");
       break;
   }
 
   // Delay between temperature readings (1 second)
-  delay(1000);  // Slow down the loop to observe the state changes
+  delay(1000); 
 }
 ```
 
