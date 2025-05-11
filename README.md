@@ -16,6 +16,11 @@ This project simulates a basic heater control system using an ESP32 and a DHT22 
 - **Serial Monitor**: Used for displaying simulated BLE notifications and the heater state.
 
 ## Circuit Diagram:
+
+
+![Image](https://github.com/user-attachments/assets/e070bd3d-f1eb-40fd-823f-3207c8b8084f)
+
+
 - **DHT22 Sensor**: 
   - VCC → 3.3V (ESP32)
   - GND → GND (ESP32)
@@ -114,9 +119,6 @@ void loop() {
   delay(1000); 
 }
 ```
-## Circuit Diagram :
-
-
 
 ## Code Explanation:
 ### States:
